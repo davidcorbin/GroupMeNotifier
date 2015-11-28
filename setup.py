@@ -4,7 +4,7 @@ import requests.certs
 import sys
 import os
 
-print os.getcwd()+"\\groupmenotifier"
+# Added groupmenotifier/ directory to system path so thay cxfreeze includes groupme.py, etc.
 sys.path.append(os.getcwd()+"\\groupmenotifier")
 
 options = {
@@ -21,7 +21,8 @@ setup(
     license='MIT',
     author='David Corbin',
     author_email='daconex+groupmenotifier@gmail.com',
-    description='Client for GroupMe',
+    description='Windows 10 client for GroupMe',
     options=options,
-    executables=[Executable("groupmenotifier/main.py")]
+    executables=[Executable("groupmenotifier/main.py")],
+    requires=['requests', 'cx_Freeze']
 )
