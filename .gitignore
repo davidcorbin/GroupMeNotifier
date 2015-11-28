@@ -4,3 +4,6 @@
 # API access token
 groupmenotifier/access_token
 
+# cxfreeze build dir
+build/
+
