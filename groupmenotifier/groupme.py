@@ -1,5 +1,6 @@
 from WindowsNotification import notify
 import requests
+import ssl
 import json
 import threading
 import time
@@ -14,12 +15,13 @@ class GroupMe:
 
     request_URL = "oauth.groupme.com/oauth/authorize?client_id=DRHcjc2QwMkHNtoB0dP6o3skAzIhhVo2j9oja3d26c0l83gr"
     access_token = ""
-    access_token_dir = "groupmenotifier/access_token"
+    access_token_dir = "access_token"
     clientId = ""
     userid = ""
     PORT = 8000
-    server = ""
+    server = ""  # Object used for capturing the access token
     requestid = 1
+    cacert = "cacert.pem"
 
     def __init__(self):
         print "New Instance of GroupMe"
@@ -38,8 +40,9 @@ class GroupMe:
     ]
     """
         print "Handshake..."
-        print "Sending (POST): %s" %data
-        r = requests.post('https://push.groupme.com/faye', data=data, json=None, headers={'content-type': 'application/json'})
+        print "Sending (POST): %s" % data
+        r = requests.post('https://push.groupme.com/faye', data=data, json=None, verify=self.cacert,
+                          headers={'content-type': 'application/json'})
         # Increase id
         self.increment_request_id()
         print "Received:"
@@ -89,13 +92,15 @@ class GroupMe:
     ]
     """
 
-        r = requests.post('https://push.groupme.com/faye', data=data, json=None, headers={'content-type': 'application/json'})
+        r = requests.post('https://push.groupme.com/faye', data=data, json=None, verify=self.cacert,
+                          headers={'content-type': 'application/json'})
         print r.text
         self.increment_request_id()
 
     # Method for connecting to GroupMe API servers and waiting for messages
     def connect(self):
-        ws = websocket.create_connection("wss://push.groupme.com/faye")
+        ws = websocket.create_connection("wss://push.groupme.com/faye",
+                    sslopt={"check_hostname": False, "cert_reqs": ssl.CERT_NONE, "ca_certs": "cacert.pem"})
         print "\nConnecting socket:"
         data = """
     [
@@ -126,7 +131,7 @@ class GroupMe:
         url = "https://api.groupme.com/v3/groups?per_page=500&access_token="+self.access_token
         print "Getting list of groups"
         print "Sent (GET): "+url
-        r = requests.get(url, headers={'content-type': 'application/json'})
+        r = requests.get(url, verify=self.cacert, headers={'content-type': 'application/json'})
         p = json.loads(r.text)
         r = p["response"]
         for groupid in r:
@@ -152,10 +157,11 @@ class GroupMe:
     ]
     """ % (self.clientId, self.userid, self.requestid, self.access_token, int(time.time()))
         print data
-        r = requests.post('https://push.groupme.com/faye', data=data, json=None, headers={'content-type': 'application/json'})
+        r = requests.post('https://push.groupme.com/faye', data=data, json=None, verify=self.cacert,
+                          headers={'content-type': 'application/json'})
         # Increase id
         self.increment_request_id()
-        #p = json.loads(r.text)
+        # p = json.loads(r.text)
         print r.text
 
     # Method to get user details
@@ -163,7 +169,7 @@ class GroupMe:
         url = "https://api.groupme.com/v3/users/me?access_token="+self.access_token
         print "Getting user info"
         print "Sent (GET): "+url
-        r = requests.get(url, headers={'content-type': 'application/json'})
+        r = requests.get(url, verify=self.cacert, headers={'content-type': 'application/json'})
         p = json.loads(r.text)
         self.userid = p["response"]["id"]
         print "Successfully got user details"

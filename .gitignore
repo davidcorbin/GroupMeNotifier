@@ -1,0 +1,6 @@
+# Pycharm IDE
+.idea
+
+# API access token
+groupmenotifier/access_token
+

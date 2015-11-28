@@ -1,16 +1,27 @@
 from distutils.core import setup
+from cx_Freeze import setup, Executable
 import requests.certs
+import sys
+import os
 
-build_exe_options = {"include_files": [(requests.certs.where(), 'cacert.pem')]}
+print os.getcwd()+"\\groupmenotifier"
+sys.path.append(os.getcwd()+"\\groupmenotifier")
+
+options = {
+    'build_exe': {
+        'includes': ["groupme"],
+        'include_files': [(requests.certs.where(), 'cacert.pem')]
+    }
+}
 
 setup(
     name='GroupMe Notifier',
     version='0.1',
-    packages=['groupmenotifier'],
     url='http://daconex.me',
     license='MIT',
     author='David Corbin',
     author_email='daconex+groupmenotifier@gmail.com',
     description='Client for GroupMe',
-    install_requires=['requests', 'websocket']
+    options=options,
+    executables=[Executable("groupmenotifier/main.py")]
 )
