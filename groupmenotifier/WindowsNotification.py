@@ -1,5 +1,6 @@
 from win32gui import *
-import os, sys
+import os
+import sys
 import win32con
 import time
 
