@@ -112,7 +112,8 @@ class GroupMe:
     #
     def connect(self):
         ws = websocket.create_connection("wss://push.groupme.com/faye",
-                    sslopt={"check_hostname": False, "cert_reqs": ssl.CERT_NONE, "ca_certs": "cacert.pem"})
+                                         sslopt={"check_hostname": False, "cert_reqs": ssl.CERT_NONE,
+                                                 "ca_certs": "cacert.pem"})
         print "\nConnecting socket:"
         data = """
     [
