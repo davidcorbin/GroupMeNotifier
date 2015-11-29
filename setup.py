@@ -1,4 +1,3 @@
-from distutils.core import setup
 from cx_Freeze import setup, Executable
 import requests.certs
 import sys
