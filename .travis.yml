@@ -16,4 +16,5 @@ after_success:
   - codecov
 
 script:
+  - cd groupmenotifier
   - coverage run main.py
